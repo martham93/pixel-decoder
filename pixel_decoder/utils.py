@@ -40,14 +40,7 @@ def open_image(fn):
     return img
 
 def cache_stats(imgs_folder):
-    imgs = []
-    for f in listdir(path.join(imgs_folder)):
-        format = dataformat(f)
-        if path.isfile(path.join(imgs_folder, f)) and str(format) in f:
-            fpath = path.join(imgs_folder, f)
-            img = open_image(fpath)
-            img_ = np.expand_dims(img, axis=0)
-            imgs.append(img)
+    imgs = imgs_folder
     imgs_arr = np.array(imgs)
     dt_means, dt_stds = stats_data(imgs_arr)
     # print("mean for the dataset is {}".format(dt_means))
@@ -64,23 +57,6 @@ def preprocess_inputs_std(x, mean, std):
     x[zero_msk] = 0
     return x
 
-def datafiles(imgs_folder, masks_folder):
-    all_files = []
-    all_masks = []
-    t0 = timeit.default_timer()
-    # imgs_folder = sys.argv[2]
-    # masks_folder = os.path.join(os.getcwd(),sys.argv[3])
-    # models_folder = os.path.join(os.getcwd(),sys.argv[4])
-    for f in sorted(listdir(path.join(os.getcwd(), imgs_folder))):
-        if path.isfile(path.join(os.getcwd(),imgs_folder, f)) and dataformat(path.join(os.getcwd(),imgs_folder, f)) in f:
-            img_id = f.split('.')[0]
-            all_files.append(path.join(os.getcwd(), imgs_folder, f))
-            all_masks.append(path.join(masks_folder, '{0}.{1}'.format(img_id, 'png')))
-    all_files = np.asarray(all_files)
-    all_masks = np.asarray(all_masks)
-    return all_files, all_masks
-
-# all_files,all_masks = datafiles(imgs_folder, masks_folder, models_folder)
 def rotate_image(image, angle, scale, imgs_folder, masks_folder):
     all_files,all_masks = datafiles(imgs_folder, masks_folder)
     image_center = tuple(np.array(image.shape[:2])/2)
@@ -88,7 +64,6 @@ def rotate_image(image, angle, scale, imgs_folder, masks_folder):
     result = cv2.warpAffine(image, rot_mat, image.shape[:2],flags=cv2.INTER_LINEAR)
     return result
 
- # = cache_stats(imgs_folder)
 
 def batch_data_generator(train_idx, batch_size, means, stds, imgs_folder, masks_folder, models_folder, channel_no, border_no, origin_shape_no):
     origin_shape = (int(origin_shape_no), int(origin_shape_no))

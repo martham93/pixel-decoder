@@ -21,7 +21,7 @@ def train(batch_size, imgs_folder, masks_folder, models_folder, model_id, origin
     origin_shape = (int(origin_shape_no), int(origin_shape_no))
     border = (int(border_no), int(border_no))
     input_shape = origin_shape
-    all_files, all_masks = datafiles(imgs_folder, masks_folder)
+    all_files, all_masks = imgs_folder, masks_folder
     means, stds = cache_stats(imgs_folder)
     if model_id == 'resnet_unet':
         model = get_resnet_unet(input_shape, channel_no, classes)
