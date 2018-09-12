@@ -1,6 +1,6 @@
 # import os
 from os import path, mkdir
-from pixel_decoder.utils import datafiles, cache_stats, batch_data_generator, val_data_generator
+from pixel_decoder.utils import cache_stats, batch_data_generator, val_data_generator
 
 import numpy as np
 np.random.seed(1)
