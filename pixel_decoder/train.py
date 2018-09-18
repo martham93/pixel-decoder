@@ -1,6 +1,6 @@
 # import os
 from os import path, mkdir
-from pixel_decoder.utils import cache_stats, batch_data_generator, val_data_generator
+from pixel_decoder.utils import datafiles, cache_stats, batch_data_generator, val_data_generator
 
 import numpy as np
 np.random.seed(1)
@@ -27,10 +27,8 @@ def train(batch_size, imgs_folder, masks_folder, models_folder, model_id, origin
         model = get_resnet_unet(input_shape, channel_no, classes)
     else:
         print('No model loaded!')
-
     if not path.isdir(models_folder):
         mkdir(models_folder)
-
     kf = KFold(n_splits=4, shuffle=True, random_state=1)
     for all_train_idx, all_val_idx in kf.split(all_files):
         train_idx = []
@@ -43,10 +41,10 @@ def train(batch_size, imgs_folder, masks_folder, models_folder, model_id, origin
 
         validation_steps = int(len(val_idx) / batch_size)
         steps_per_epoch = int(len(train_idx) / batch_size)
-
+        print(validation_steps,steps_per_epoch)
         if validation_steps == 0 or steps_per_epoch == 0:
           continue
-
+          print('line 49 reached')
         print('steps_per_epoch', steps_per_epoch, 'validation_steps', validation_steps)
 
         np.random.seed(11)
@@ -62,7 +60,7 @@ def train(batch_size, imgs_folder, masks_folder, models_folder, model_id, origin
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
 
         model_checkpoint = ModelCheckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
-                                         save_best_only=True, save_weights_only=True, mode='max')
+                                         save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
                             epochs=25, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
@@ -94,7 +92,7 @@ def train(batch_size, imgs_folder, masks_folder, models_folder, model_id, origin
                     optimizer=Adam(lr=5e-4),
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
         model_checkpoint2 = ModelCheckpoint(path.join(models_folder, '{}_weights2.h5'.format(model_id)), monitor='val_dice_coef_rounded',
-                                         save_best_only=True, save_weights_only=True, mode='max')
+                                         save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
                             epochs=30, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
@@ -115,7 +113,7 @@ def train(batch_size, imgs_folder, masks_folder, models_folder, model_id, origin
                     optimizer=Adam(lr=5e-5),
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
         model_checkpoint3 = ModelCheckpoint(path.join(models_folder, '{}_weights3.h5'.format(model_id)), monitor='val_dice_coef_rounded',
-                                         save_best_only=True, save_weights_only=True, mode='max')
+                                         save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
                             epochs=50, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
@@ -130,7 +128,7 @@ def train(batch_size, imgs_folder, masks_folder, models_folder, model_id, origin
                     optimizer=Adam(lr=2e-5),
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
         model_checkpoint4 = ModelCheckpoint(path.join(models_folder, '{}_weights4.h5'.format(model_id)), monitor='val_dice_coef_rounded',
-                                         save_best_only=True, save_weights_only=True, mode='max')
+                                         save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
                             epochs=50, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
