@@ -25,7 +25,7 @@ def train(batch_size, imgs_folder, masks_folder, models_folder, model_id, origin
     means, stds = cache_stats(imgs_folder)
     if model_id == 'resnet_unet':
         model = get_resnet_unet(input_shape, channel_no, classes)
-    else
+    else:
         print('No model loaded!')
     if not path.isdir(models_folder):
         mkdir(models_folder)
