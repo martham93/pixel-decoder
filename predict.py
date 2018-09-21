@@ -59,7 +59,7 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
         mask = mask[mask_index1:mask_index2, mask_index1:mask_index2, ...]
         mask = mask * 255
         mask = mask.astype('uint8')
-        if write_locally=True:
+        if write_locally is True:
             cv2.imwrite(path.join(pred_folder, model_id,'{}.png'.format(img_id)), mask, [cv2.IMWRITE_PNG_COMPRESSION, 9])
         else:
             predictions.append(mask)
