@@ -17,7 +17,7 @@ np.seterr(divide='ignore', invalid='ignore')
 from pixel_decoder.utils import dataformat, stats_data, open_image, preprocess_inputs_std, cache_stats
 from pixel_decoder.resnet_unet import get_resnet_unet
 
-def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_no, border_no, model_id, channel_no=3):
+def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_no, border_no, model_id, channel_no=3, write_locally=False):
     origin_shape = (origin_shape_no, origin_shape_no)
     rgb_index = [0, 1, 2]
     border = (border_no, border_no)
@@ -35,6 +35,7 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
     if not path.isdir(models_folder):
         mkdir(models_folder)
     print('model loaded')
+    predictions=[]
     for img_id,f in enumerate(test_folder):
         print('39')
         img = f
@@ -58,4 +59,8 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
         mask = mask[mask_index1:mask_index2, mask_index1:mask_index2, ...]
         mask = mask * 255
         mask = mask.astype('uint8')
-        cv2.imwrite(path.join(pred_folder, model_id,'{}.png'.format(img_id)), mask, [cv2.IMWRITE_PNG_COMPRESSION, 9])
+        if write_locally=True:
+            cv2.imwrite(path.join(pred_folder, model_id,'{}.png'.format(img_id)), mask, [cv2.IMWRITE_PNG_COMPRESSION, 9])
+        else:
+            predictions.append(mask)
+    return(predictions)
