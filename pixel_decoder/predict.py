@@ -23,7 +23,6 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
     border = (border_no, border_no)
     input_shape = (origin_shape[0] + border[0] + border[1] , origin_shape[1] + border[0] + border[1])
     means, stds = cache_stats(imgs_folder)
-    print('25')
     if not path.isdir(pred_folder):mkdir(os.path.join(os.getcwd(),pred_folder))
     if not path.isdir(path.join(pred_folder, model_id)):mkdir(path.join(pred_folder, model_id))
     if model_id == 'resnet_unet':
@@ -37,21 +36,18 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
     print('model loaded')
     predictions=[]
     for img_id,f in enumerate(test_folder):
-        print('39')
         img = f
         if channel_no == 8:img = img
         else:
             band_index = rgb_index
             img = img[:, :, band_index]
         img = cv2.copyMakeBorder(img, border[0], border[1], border[0], border[1], cv2.BORDER_REFLECT_101)
-        print('46')
         inp = []
         inp.append(img)
         inp.append(np.rot90(img, k=1))
         inp = np.asarray(inp)
         inp = preprocess_inputs_std(inp, means, stds)
         pred = model.predict(inp)
-        print('53')
         mask = pred[0] + np.rot90(pred[1], k=3)
         mask /= 2
         mask_index1 = border[0]
