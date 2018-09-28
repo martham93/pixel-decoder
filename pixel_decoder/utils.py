@@ -63,7 +63,7 @@ def rotate_image(image, angle, scale, imgs_folder, masks_folder):
     rot_mat = cv2.getRotationMatrix2D(image_center, angle, scale)
     result = cv2.warpAffine(image, rot_mat, image.shape[:2],flags=cv2.INTER_LINEAR)
     return result
-    
+
 def batch_data_generator(train_idx, batch_size, means, stds, imgs_folder, masks_folder, models_folder, channel_no, border_no, origin_shape_no):
     origin_shape = (int(origin_shape_no), int(origin_shape_no))
     border = (border_no, border_no)
@@ -75,7 +75,7 @@ def batch_data_generator(train_idx, batch_size, means, stds, imgs_folder, masks_
     while True:
         np.random.shuffle(train_idx)
         for i in train_idx:
-            img = open_image(all_files[i])
+            img = all_files[i]
 
             if img.shape[0] != origin_shape[0]:
                 img= cv2.resize(img, origin_shape)
@@ -87,7 +87,7 @@ def batch_data_generator(train_idx, batch_size, means, stds, imgs_folder, masks_
                 band_index = rgb_index
                 img = img[:, :, band_index]
             #msk = cv2.imread(all_masks[i], cv2.IMREAD_UNCHANGED)[..., 0]
-            msk = skimage.io.imread(all_masks[i])
+            msk = all_masks[i]
             #print(all_files[i], all_masks[i])
             #print(msk.shape)
             if random.random() > 0.5:
@@ -136,7 +136,7 @@ def val_data_generator(val_idx, batch_size, validation_steps, means, stds, imgs_
         outputs = []
         step_id = 0
         for i in val_idx:
-            img0 = open_image(all_files[i])
+            img0 = all_files[i]
             if img0.shape[0] != origin_shape[0]:
                 img0= cv2.resize(img0, origin_shape)
             else:
@@ -145,7 +145,7 @@ def val_data_generator(val_idx, batch_size, validation_steps, means, stds, imgs_
             else:
                 band_index = rgb_index
                 img0 = img0[:, :, band_index]
-            msk = skimage.io.imread(all_masks[i])
+            msk = all_masks[i]
             if len(msk.shape)<=2:
                 msk = np.expand_dims(msk, 2)
             msk = (msk > 127) * 1
