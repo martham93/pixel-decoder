@@ -11,6 +11,7 @@ tf.set_random_seed(1)
 from sklearn.model_selection import KFold
 # import cv2
 from keras.optimizers import SGD, Adam
+from keras.models import model_from_json
 from keras import metrics
 from keras.callbacks import ModelCheckpoint
 from pixel_decoder.loss import dice_coef, dice_logloss2, dice_logloss3, dice_coef_rounded, dice_logloss
@@ -59,7 +60,7 @@ def train(batch_size, imgs_folder, masks_folder, models_folder, model_id, origin
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
 
         model_checkpoint = ModelCheckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
-                                         save_best_only=True, save_weights_only=True, mode='max')
+                                         save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
                             epochs=25, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
@@ -91,7 +92,7 @@ def train(batch_size, imgs_folder, masks_folder, models_folder, model_id, origin
                     optimizer=Adam(lr=5e-4),
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
         model_checkpoint2 = ckpoint(path.join(models_folder, '{}_weights2.h5'.format(model_id)), monitor='val_dice_coef_rounded',
-                                         save_best_only=True, save_weights_only=True, mode='max')
+                                         save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
                             epochs=30, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
@@ -112,7 +113,7 @@ def train(batch_size, imgs_folder, masks_folder, models_folder, model_id, origin
                     optimizer=Adam(lr=5e-5),
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
         model_checkpoint3 = ModelCheckpoint(path.join(models_folder, '{}_weights3.h5'.format(model_id)), monitor='val_dice_coef_rounded',
-                                         save_best_only=True, save_weights_only=True, mode='max')
+                                         save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
                             epochs=50, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
@@ -127,12 +128,15 @@ def train(batch_size, imgs_folder, masks_folder, models_folder, model_id, origin
                     optimizer=Adam(lr=2e-5),
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
         model_checkpoint4 = ModelCheckpoint(path.join(models_folder, '{}_weights4.h5'.format(model_id)), monitor='val_dice_coef_rounded',
-                                         save_best_only=True, save_weights_only=True, mode='max')
+                                         save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
                             epochs=50, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
                             validation_steps=validation_steps,
                             callbacks=[model_checkpoint4])
         if return_model is True:
-            return(model)
+            model_json=model.to_json()
+            with open("model.json",w) as json_file:
+                json_file.write(model_json)
+                model.save_weights('model.h5')
         K.clear_session()
