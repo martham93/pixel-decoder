@@ -17,7 +17,7 @@ from pixel_decoder.loss import dice_coef, dice_logloss2, dice_logloss3, dice_coe
 from pixel_decoder.resnet_unet import get_resnet_unet
 import keras.backend as K
 
-def train(batch_size, imgs_folder, masks_folder, models_folder, model_id, origin_shape_no, border_no, classes =1, channel_no=3):
+def train(batch_size, imgs_folder, masks_folder, models_folder, model_id, origin_shape_no, border_no, classes =1, channel_no=3, return_model=True):
     origin_shape = (int(origin_shape_no), int(origin_shape_no))
     border = (int(border_no), int(border_no))
     input_shape = origin_shape
@@ -133,4 +133,6 @@ def train(batch_size, imgs_folder, masks_folder, models_folder, model_id, origin
                             validation_data=val_data_generat,
                             validation_steps=validation_steps,
                             callbacks=[model_checkpoint4])
+        if return_model is True:
+            return(model)
         K.clear_session()
