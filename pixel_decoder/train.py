@@ -31,7 +31,7 @@ def train(batch_size, imgs_folder, masks_folder, models_folder=False, model_id,
     else:
         print('No model loaded!')
 
-    if models_folder=False:
+    if models_folder is False:
         models_folder='model'
         mkdir(models_folder)
 
