@@ -19,7 +19,7 @@ from pixel_decoder.resnet_unet import get_resnet_unet
 import keras.backend as K
 
 def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
-          border_no, models_folder=False, classes =1, channel_no=3,
+          border_no, number_of_epochs,  models_folder=False, classes =1, channel_no=3,
           return_model=True):
     origin_shape = (int(origin_shape_no), int(origin_shape_no))
     border = (int(border_no), int(border_no))
@@ -70,7 +70,7 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         model_checkpoint = ModelCheckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
                                          save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
-                            epochs=5, steps_per_epoch=steps_per_epoch, verbose=2,
+                            epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
                             validation_steps=validation_steps,
                             callbacks=[model_checkpoint])
@@ -81,13 +81,13 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
 
         model.fit_generator(generator=batch_data_generat,
-                            epochs=5, steps_per_epoch=steps_per_epoch, verbose=2,
+                            epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
                              validation_steps=validation_steps,
                             callbacks=[model_checkpoint])
         model.optimizer = Adam(lr=2e-4)
         model.fit_generator(generator=batch_data_generat,
-                            epochs=5, steps_per_epoch=steps_per_epoch, verbose=2,
+                            epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
                             validation_steps=validation_steps,
                             callbacks=[model_checkpoint])
@@ -102,13 +102,13 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         model_checkpoint2 = ckpoint(path.join(models_folder, '{}_weights2.h5'.format(model_id)), monitor='val_dice_coef_rounded',
                                          save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
-                            epochs=5, steps_per_epoch=steps_per_epoch, verbose=2,
+                            epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
                             validation_steps=validation_steps,
                             callbacks=[model_checkpoint2])
         optimizer=Adam(lr=1e-5)
         model.fit_generator(generator=batch_data_generat,
-                            epochs=5, steps_per_epoch=steps_per_epoch, verbose=2,
+                            epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
                             validation_steps=validation_steps,
                             callbacks=[model_checkpoint2])
@@ -123,7 +123,7 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         model_checkpoint3 = ModelCheckpoint(path.join(models_folder, '{}_weights3.h5'.format(model_id)), monitor='val_dice_coef_rounded',
                                          save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
-                            epochs=5, steps_per_epoch=steps_per_epoch, verbose=2,
+                            epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
                             validation_steps=validation_steps,
                             callbacks=[model_checkpoint3])
@@ -138,7 +138,7 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         model_checkpoint4 = ModelCheckpoint(path.join(models_folder, '{}_weights4.h5'.format(model_id)), monitor='val_dice_coef_rounded',
                                          save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
-                            epochs=5, steps_per_epoch=steps_per_epoch, verbose=2,
+                            epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
                             validation_steps=validation_steps,
                             callbacks=[model_checkpoint4])
