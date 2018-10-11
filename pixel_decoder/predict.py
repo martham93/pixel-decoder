@@ -36,8 +36,8 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
         model = get_inception_resnet_v2_unet(input_shape, channel_no)
 
     model.load_weights('{}_weights.h5'.format(model_id))
-    if not path.isdir(models_folder):
-        mkdir(models_folder)
+    # if not path.isdir(models_folder):
+    #     mkdir(models_folder)
     print('model loaded')
     predictions=[]
     for img_id,f in enumerate(test_folder):
