@@ -99,7 +99,7 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         model.compile(loss=dice_logloss,
                     optimizer=Adam(lr=5e-4),
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
-        model_checkpoint2 = ckpoint(path.join(models_folder, '{}_weights2.h5'.format(model_id)), monitor='val_dice_coef_rounded',
+        model_checkpoint2 = ckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
                                          save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
                             epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
@@ -116,11 +116,11 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         np.random.seed(33)
         random.seed(33)
         tf.set_random_seed(33)
-        model.load_weights(path.join(models_folder, '{}_weights2.h5'.format(model_id)))
+        model.load_weights(path.join(models_folder, '{}_weights.h5'.format(model_id)))
         model.compile(loss=dice_logloss2,
                     optimizer=Adam(lr=5e-5),
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
-        model_checkpoint3 = ModelCheckpoint(path.join(models_folder, '{}_weights3.h5'.format(model_id)), monitor='val_dice_coef_rounded',
+        model_checkpoint3 = ModelCheckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
                                          save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
                             epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
@@ -131,11 +131,11 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         np.random.seed(44)
         random.seed(44)
         tf.set_random_seed(44)
-        model.load_weights(path.join(models_folder, '{}_weights3.h5'.format(model_id)))
+        model.load_weights(path.join(models_folder, '{}_weights.h5'.format(model_id)))
         model.compile(loss=dice_logloss3,
                     optimizer=Adam(lr=2e-5),
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
-        model_checkpoint4 = ModelCheckpoint(path.join(models_folder, '{}_weights4.h5'.format(model_id)), monitor='val_dice_coef_rounded',
+        model_checkpoint4 = ModelCheckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
                                          save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
                             epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,

@@ -23,14 +23,19 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
     border = (border_no, border_no)
     input_shape = (origin_shape[0] + border[0] + border[1] , origin_shape[1] + border[0] + border[1])
     means, stds = cache_stats(imgs_folder)
-    if not path.isdir(pred_folder):mkdir(os.path.join(os.getcwd(),pred_folder))
-    if not path.isdir(path.join(pred_folder, model_id)):mkdir(path.join(pred_folder, model_id))
+    if pred_folder is False:
+        pred_folder='predictions'
+        mkdir(pred_folder)
+    else:
+        if not path.isdir(pred_folder):mkdir(os.path.join(os.getcwd(),pred_folder))
+        if not path.isdir(path.join(pred_folder, model_id)):mkdir(path.join(pred_folder, model_id))
     if model_id == 'resnet_unet':
         model = get_resnet_unet(input_shape, channel_no)
     else:
         from inception_unet import get_inception_resnet_v2_unet
         model = get_inception_resnet_v2_unet(input_shape, channel_no)
-    model.load_weights(path.join(models_folder, '{}_weights4.h5'.format(model_id)))
+
+    model.load_weights(path.join(models_folder, '{}_weights.h5'.format(model_id)))
     if not path.isdir(models_folder):
         mkdir(models_folder)
     print('model loaded')
