@@ -65,4 +65,4 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
         else:
             cv2.imwrite(path.join(pred_folder, model_id,'{}.png'.format(img_id)), mask, [cv2.IMWRITE_PNG_COMPRESSION, 9])
             predictions.append(mask)
-    return(predictions)
+            return(predictions)
