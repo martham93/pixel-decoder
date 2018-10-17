@@ -17,6 +17,8 @@ from keras.callbacks import ModelCheckpoint
 from pixel_decoder.loss import dice_coef, dice_logloss2, dice_logloss3, dice_coef_rounded, dice_logloss
 from pixel_decoder.resnet_unet import get_resnet_unet
 import keras.backend as K
+import json
+from keras.callbacks import LambdaCallback
 
 def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
           border_no, number_of_epochs,  models_folder=False, classes =1, channel_no=3,
@@ -38,6 +40,8 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
     else:
         if not path.isdir(models_folder):
             mkdir(models_folder)
+    if not path.exists('model_stats'):
+        mkdir('model_stats')
     kf = KFold(n_splits=4, shuffle=True, random_state=1)
     for all_train_idx, all_val_idx in kf.split(all_files):
         train_idx = []
@@ -50,7 +54,6 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
 
         validation_steps = int(len(val_idx) / batch_size)
         steps_per_epoch = int(len(train_idx) / batch_size)
-        print(validation_steps,steps_per_epoch)
         if validation_steps == 0 or steps_per_epoch == 0:
           continue
         print('steps_per_epoch', steps_per_epoch, 'validation_steps', validation_steps)
@@ -69,22 +72,45 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
 
         model_checkpoint = ModelCheckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
                                          save_best_only=True, save_weights_only=False, mode='max')
-        model.fit_generator(generator=batch_data_generat,
+        model_1=model.fit_generator(generator=batch_data_generat,
                             epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
                             validation_steps=validation_steps,
                             callbacks=[model_checkpoint])
+
+        # model_1_stats = model_1.history['loss']
+        # numpy_loss_history = np.array(model_1_stats)
+        # model_num=1
+        # model_stats_file="model_stats/loss_history.txt"
+        # try:
+        #     np.savetxt(model_stats_file, np.c_[model_num,model_1_stats], delimiter=",",
+        #                 fmt=('%0.f','%.5f'), header='Model #, model loss')
+        # except:
+        #     print(model_1_stats)
+        #     f=open(model_stats_file, 'ab')
+        #     np.savetxt(f,np.c_[model_num,model_1_stats], delimiter=",",
+        #                 fmt=('%0.f','%.5f'))
+        #     f.close()
+
         for l in model.layers:
-          l.trainable = True
+            l.trainable = True
         model.compile(loss=dice_logloss3,
                     optimizer=Adam(lr=1e-3),
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
 
-        model.fit_generator(generator=batch_data_generat,
+        model_2=model.fit_generator(generator=batch_data_generat,
                             epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
                              validation_steps=validation_steps,
                             callbacks=[model_checkpoint])
+        model_2_stats=model_2.history['loss']
+        model_num=2
+        numpy_loss_history = np.array(model_2_stats)
+        # f=open(model_stats_file, 'ab')
+        # np.savetxt(f,np.c_[model_num,model_2_stats], delimiter=",",
+        #             fmt=('%0.f','%.5f'))
+        # f.close()
+
         model.optimizer = Adam(lr=2e-4)
         model.fit_generator(generator=batch_data_generat,
                             epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
@@ -99,7 +125,7 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         model.compile(loss=dice_logloss,
                     optimizer=Adam(lr=5e-4),
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
-        model_checkpoint2 = ckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
+        model_checkpoint2 =  ModelCheckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
                                          save_best_only=True, save_weights_only=False, mode='max')
         model.fit_generator(generator=batch_data_generat,
                             epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
@@ -112,7 +138,7 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
                             validation_data=val_data_generat,
                             validation_steps=validation_steps,
                             callbacks=[model_checkpoint2])
-
+        model_2_stats = model.history()
         np.random.seed(33)
         random.seed(33)
         tf.set_random_seed(33)
@@ -127,7 +153,7 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
                             validation_data=val_data_generat,
                             validation_steps=validation_steps,
                             callbacks=[model_checkpoint3])
-
+        model_3_stats = model.history()
         np.random.seed(44)
         random.seed(44)
         tf.set_random_seed(44)
@@ -142,6 +168,14 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
                             validation_data=val_data_generat,
                             validation_steps=validation_steps,
                             callbacks=[model_checkpoint4])
+        model_4_stats = model.history()
+        json_log = open('loss_log.json', mode='wt', buffering=1)
+        json_logging_callback = LambdaCallback(
+            on_epoch_end=lambda epoch, logs: json_log.write(
+                json.dumps({'epoch': epoch, 'loss': logs['loss']}) + '\n'),
+            on_train_end=lambda logs: json_log.close()
+        )
+
         K.clear_session()
     if return_model is True:
         model_json=model.to_json()
