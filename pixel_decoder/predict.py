@@ -25,6 +25,7 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
     means, stds = cache_stats(imgs_folder)
     if pred_folder is False:
         pred_folder='predictions'
+
         mkdir(pred_folder)
     else:
         if not path.isdir(pred_folder):mkdir(os.path.join(os.getcwd(),pred_folder))
@@ -36,8 +37,6 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
         model = get_inception_resnet_v2_unet(input_shape, channel_no)
 
     model.load_weights('{}_weights.h5'.format(model_id))
-    # if not path.isdir(models_folder):
-    #     mkdir(models_folder)
     print('model loaded')
     predictions=[]
     for img_id,f in enumerate(test_folder):
@@ -65,4 +64,4 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
         else:
             cv2.imwrite(path.join(pred_folder, model_id,'{}.png'.format(img_id)), mask, [cv2.IMWRITE_PNG_COMPRESSION, 9])
             predictions.append(mask)
-            return(predictions)
+    return(predictions)
