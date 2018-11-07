@@ -25,8 +25,8 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
     means, stds = cache_stats(imgs_folder)
     if pred_folder is False:
         pred_folder='predictions'
-
-        mkdir(pred_folder)
+        if not path.exists(pred_folder):
+            mkdir(pred_folder)
     else:
         if not path.isdir(pred_folder):mkdir(os.path.join(os.getcwd(),pred_folder))
         if not path.isdir(path.join(pred_folder, model_id)):mkdir(path.join(pred_folder, model_id))
@@ -41,6 +41,7 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
     predictions=[]
     for img_id,f in enumerate(test_folder):
         img = f
+        print(img_id)
         if channel_no == 8:img = img
         else:
             band_index = rgb_index
@@ -62,6 +63,5 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
         if write_locally is True:
             cv2.imwrite(path.join(pred_folder, model_id,'{}.png'.format(img_id)), mask, [cv2.IMWRITE_PNG_COMPRESSION, 9])
         else:
-            cv2.imwrite(path.join(pred_folder, model_id,'{}.png'.format(img_id)), mask, [cv2.IMWRITE_PNG_COMPRESSION, 9])
             predictions.append(mask)
     return(predictions)

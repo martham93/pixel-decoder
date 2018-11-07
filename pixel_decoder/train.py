@@ -78,20 +78,6 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
                             validation_steps=validation_steps,
                             callbacks=[model_checkpoint])
 
-        # model_1_stats = model_1.history['loss']
-        # numpy_loss_history = np.array(model_1_stats)
-        # model_num=1
-        # model_stats_file="model_stats/loss_history.txt"
-        # try:
-        #     np.savetxt(model_stats_file, np.c_[model_num,model_1_stats], delimiter=",",
-        #                 fmt=('%0.f','%.5f'), header='Model #, model loss')
-        # except:
-        #     print(model_1_stats)
-        #     f=open(model_stats_file, 'ab')
-        #     np.savetxt(f,np.c_[model_num,model_1_stats], delimiter=",",
-        #                 fmt=('%0.f','%.5f'))
-        #     f.close()
-
         for l in model.layers:
             l.trainable = True
         model.compile(loss=dice_logloss3,
@@ -106,10 +92,6 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         model_2_stats=model_2.history['loss']
         model_num=2
         numpy_loss_history = np.array(model_2_stats)
-        # f=open(model_stats_file, 'ab')
-        # np.savetxt(f,np.c_[model_num,model_2_stats], delimiter=",",
-        #             fmt=('%0.f','%.5f'))
-        # f.close()
 
         model.optimizer = Adam(lr=2e-4)
         model.fit_generator(generator=batch_data_generat,
@@ -121,7 +103,7 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         np.random.seed(22)
         random.seed(22)
         tf.set_random_seed(22)
-        model.load_weights(path.join(models_folder, '{}_weights.h5'.format(model_id)))
+        model.load_weights(path.join(models_folder, '{}_weights2.h5'.format(model_id)))
         model.compile(loss=dice_logloss,
                     optimizer=Adam(lr=5e-4),
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
@@ -142,7 +124,7 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         np.random.seed(33)
         random.seed(33)
         tf.set_random_seed(33)
-        model.load_weights(path.join(models_folder, '{}_weights.h5'.format(model_id)))
+        model.load_weights(path.join(models_folder, '{}_weights2.h5'.format(model_id)))
         model.compile(loss=dice_logloss2,
                     optimizer=Adam(lr=5e-5),
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
@@ -157,7 +139,7 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         np.random.seed(44)
         random.seed(44)
         tf.set_random_seed(44)
-        model.load_weights(path.join(models_folder, '{}_weights.h5'.format(model_id)))
+        model.load_weights(path.join(models_folder, '{}_weights3.h5'.format(model_id)))
         model.compile(loss=dice_logloss3,
                     optimizer=Adam(lr=2e-5),
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
@@ -168,18 +150,12 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
                             validation_data=val_data_generat,
                             validation_steps=validation_steps,
                             callbacks=[model_checkpoint4])
-        model_4_stats = model.history()
-        json_log = open('loss_log.json', mode='wt', buffering=1)
-        json_logging_callback = LambdaCallback(
-            on_epoch_end=lambda epoch, logs: json_log.write(
-                json.dumps({'epoch': epoch, 'loss': logs['loss']}) + '\n'),
-            on_train_end=lambda logs: json_log.close()
-        )
+        # model_4_stats = model.history()
+        # json_log = open('loss_log.json', mode='wt', buffering=1)
+        # json_logging_callback = LambdaCallback(
+        #     on_epoch_end=lambda epoch, logs: json_log.write(
+        #         json.dumps({'epoch': epoch, 'loss': logs['loss']}) + '\n'),
+        #     on_train_end=lambda logs: json_log.close()
+        # )
 
         K.clear_session()
-    if return_model is True:
-        model_json=model.to_json()
-        with open("model.json",w) as json_file:
-            json_file.write(model_json)
-            model.save_weights('model.h5')
-            return(json_file)
