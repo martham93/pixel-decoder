@@ -23,10 +23,12 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
     border = (border_no, border_no)
     input_shape = (origin_shape[0] + border[0] + border[1] , origin_shape[1] + border[0] + border[1])
     means, stds = cache_stats(imgs_folder)
-    if pred_folder is False:
+    if pred_folder is None:
         pred_folder='predictions'
         if not path.exists(pred_folder):
             mkdir(pred_folder)
+        if not path.isdir(pred_folder):mkdir(os.path.join(os.getcwd(),pred_folder))
+        if not path.isdir(path.join(pred_folder, model_id)):mkdir(path.join(pred_folder, model_id))
     else:
         if not path.isdir(pred_folder):mkdir(os.path.join(os.getcwd(),pred_folder))
         if not path.isdir(path.join(pred_folder, model_id)):mkdir(path.join(pred_folder, model_id))
@@ -41,7 +43,6 @@ def predict(imgs_folder, test_folder, models_folder, pred_folder, origin_shape_n
     predictions=[]
     for img_id,f in enumerate(test_folder):
         img = f
-        print(img_id)
         if channel_no == 8:img = img
         else:
             band_index = rgb_index
