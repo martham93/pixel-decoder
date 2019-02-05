@@ -47,8 +47,9 @@ def predict(imgs_folder, test_folder, pred_folder, models_folder, origin_shape_n
         img = f
         if channel_no == 8:img = img
         else:
-            band_index = rgb_index
-            img = img[:, :, band_index]
+            # rgb = rgb_index
+            # img = img[:, :, band_index]
+            img = img
         img = cv2.copyMakeBorder(img, border[0], border[1], border[0], border[1], cv2.BORDER_REFLECT_101)
         inp = []
         inp.append(img)
