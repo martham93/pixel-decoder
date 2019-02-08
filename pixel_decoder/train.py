@@ -20,6 +20,11 @@ import keras.backend as K
 import json
 from keras.callbacks import LambdaCallback
 
+
+
+#trying to add pyveda for generator
+import pyveda as pv
+
 def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
           border_no, number_of_epochs,  models_folder=False, classes =1, channel_no=3,
           return_model=True):
@@ -43,17 +48,20 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
     if not path.exists('model_stats'):
         mkdir('model_stats')
     kf = KFold(n_splits=4, shuffle=True, random_state=1)
-    for all_train_idx, all_val_idx in kf.split(all_files):
-        train_idx = []
-        val_idx = []
+    # for all_train_idx, all_val_idx in kf.split(all_files):
+    #     train_idx = []
+    #     val_idx = []
+    #
+    #     for i in all_train_idx:
+    #         train_idx.append(i)
+    #     for i in all_val_idx:
+    #         val_idx.append(i)
+    #
+    #     validation_steps = int(len(val_idx) / batch_size)
+    #     steps_per_epoch = int(len(train_idx) / batch_size)
 
-        for i in all_train_idx:
-            train_idx.append(i)
-        for i in all_val_idx:
-            val_idx.append(i)
-
-        validation_steps = int(len(val_idx) / batch_size)
-        steps_per_epoch = int(len(train_idx) / batch_size)
+        validation_steps = int(len(imgs_folder.validate)/batch_size)
+        steps_per_epoch = int(len(imgs_folder.train)/batch_size)
         if validation_steps == 0 or steps_per_epoch == 0:
           continue
         print('steps_per_epoch', steps_per_epoch, 'validation_steps', validation_steps)
@@ -62,9 +70,11 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         random.seed(11)
         tf.set_random_seed(11)
         print(model.summary())
-        batch_data_generat = batch_data_generator(train_idx, batch_size, means, stds, imgs_folder, masks_folder, models_folder, channel_no, border_no, origin_shape_no)
-        val_data_generat = val_data_generator(val_idx, batch_size, validation_steps, means, stds, imgs_folder, masks_folder, models_folder, channel_no, border_no, origin_shape_no)
+        # batch_data_generat = batch_data_generator(train_idx, batch_size, means, stds, imgs_folder, masks_folder, models_folder, channel_no, border_no, origin_shape_no)
+        # val_data_generat = val_data_generator(val_idx, batch_size, validation_steps, means, stds, imgs_folder, masks_folder, models_folder, channel_no, border_no, origin_shape_no)
 
+        batch_data_generat = imgs_folder.train.batch_generator(batch_size=batch_size, channels_last=True)
+        val_data_generat = imgs_folder.test.batch_generator(batch_size=batch_size, channels_last=True)
 
         model.compile(loss=dice_logloss3,
                     optimizer=SGD(lr=5e-2, decay=1e-6, momentum=0.9, nesterov=True),
