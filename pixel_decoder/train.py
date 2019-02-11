@@ -26,7 +26,7 @@ from keras.callbacks import LambdaCallback
 import pyveda as pv
 
 def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
-          border_no, number_of_epochs,  models_folder=False, classes =1, channel_no=3,
+          border_no, number_of_epochs, veda_data, models_folder=False, classes =1, channel_no=3,
           return_model=True):
     origin_shape = (int(origin_shape_no), int(origin_shape_no))
     border = (int(border_no), int(border_no))
@@ -48,7 +48,7 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
     if not path.exists('model_stats'):
         mkdir('model_stats')
     kf = KFold(n_splits=4, shuffle=True, random_state=1)
-    # for all_train_idx, all_val_idx in kf.split(all_files):
+    for all_train_idx, all_val_idx in kf.split(all_files):
     #     train_idx = []
     #     val_idx = []
     #
@@ -60,10 +60,10 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
     #     validation_steps = int(len(val_idx) / batch_size)
     #     steps_per_epoch = int(len(train_idx) / batch_size)
 
-        validation_steps = int(len(imgs_folder.validate)/batch_size)
-        steps_per_epoch = int(len(imgs_folder.train)/batch_size)
+        validation_steps = int(len(veda_data.validate)/batch_size)
+        steps_per_epoch = int(len(veda_data.train)/batch_size)
         if validation_steps == 0 or steps_per_epoch == 0:
-          continue
+            continue
         print('steps_per_epoch', steps_per_epoch, 'validation_steps', validation_steps)
 
         np.random.seed(11)
@@ -73,8 +73,8 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         # batch_data_generat = batch_data_generator(train_idx, batch_size, means, stds, imgs_folder, masks_folder, models_folder, channel_no, border_no, origin_shape_no)
         # val_data_generat = val_data_generator(val_idx, batch_size, validation_steps, means, stds, imgs_folder, masks_folder, models_folder, channel_no, border_no, origin_shape_no)
 
-        batch_data_generat = imgs_folder.train.batch_generator(batch_size=batch_size, channels_last=True)
-        val_data_generat = imgs_folder.test.batch_generator(batch_size=batch_size, channels_last=True)
+        batch_data_generat = veda_data.train.batch_generator(batch_size=batch_size, channels_last=True)
+        val_data_generat = veda_data.test.batch_generator(batch_size=batch_size, channels_last=True)
 
         model.compile(loss=dice_logloss3,
                     optimizer=SGD(lr=5e-2, decay=1e-6, momentum=0.9, nesterov=True),
