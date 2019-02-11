@@ -76,9 +76,12 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         batch_data_generat = veda_data.train.batch_generator(batch_size=batch_size, channels_last=True)
         val_data_generat = veda_data.test.batch_generator(batch_size=batch_size, channels_last=True)
 
+        print("about to compile")
         model.compile(loss=dice_logloss3,
                     optimizer=SGD(lr=5e-2, decay=1e-6, momentum=0.9, nesterov=True),
                     metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
+
+        print("model complied")
 
         model_checkpoint = ModelCheckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
                                          save_best_only=True, save_weights_only=False, mode='max')
