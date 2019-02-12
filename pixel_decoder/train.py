@@ -89,86 +89,86 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
                             epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
                             validation_data=val_data_generat,
                             validation_steps=validation_steps,
-                            callbacks=[model_checkpoint])
+                            callbacks=[model_checkpoint], workers=0)
 
-        for l in model.layers:
-            l.trainable = True
-        model.compile(loss=dice_logloss3,
-                    optimizer=Adam(lr=1e-3),
-                    metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
-
-        model_2=model.fit_generator(generator=batch_data_generat,
-                            epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
-                            validation_data=val_data_generat,
-                             validation_steps=validation_steps,
-                            callbacks=[model_checkpoint], use_multiprocessing=True)
-        model_2_stats=model_2.history['loss']
-        model_num=2
-        numpy_loss_history = np.array(model_2_stats)
-
-        model.optimizer = Adam(lr=2e-4)
-        model.fit_generator(generator=batch_data_generat,
-                            epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
-                            validation_data=val_data_generat,
-                            validation_steps=validation_steps,
-                            callbacks=[model_checkpoint], use_multiprocessing=True)
-
-        np.random.seed(22)
-        random.seed(22)
-        tf.set_random_seed(22)
-        model.load_weights(path.join(models_folder, '{}_weights2.h5'.format(model_id)))
-        model.compile(loss=dice_logloss,
-                    optimizer=Adam(lr=5e-4),
-                    metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
-        model_checkpoint2 =  ModelCheckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
-                                         save_best_only=True, save_weights_only=False, mode='max')
-        # model.fit_generator(generator=batch_data_generat,
-        #                     epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
-        #                     validation_data=val_data_generat,
-        #                     validation_steps=validation_steps,
-        #                     callbacks=[model_checkpoint2])
-        # optimizer=Adam(lr=1e-5)
-        # model.fit_generator(generator=batch_data_generat,
-        #                     epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
-        #                     validation_data=val_data_generat,
-        #                     validation_steps=validation_steps,
-        #                     callbacks=[model_checkpoint2])
-        # model_2_stats = model.history()
-        # np.random.seed(33)
-        # random.seed(33)
-        # tf.set_random_seed(33)
-        # model.load_weights(path.join(models_folder, '{}_weights2.h5'.format(model_id)))
-        # model.compile(loss=dice_logloss2,
-        #             optimizer=Adam(lr=5e-5),
-        #             metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
-        # model_checkpoint3 = ModelCheckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
-        #                                  save_best_only=True, save_weights_only=False, mode='max')
-        # model.fit_generator(generator=batch_data_generat,
-        #                     epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
-        #                     validation_data=val_data_generat,
-        #                     validation_steps=validation_steps,
-        #                     callbacks=[model_checkpoint3])
-        # model_3_stats = model.history()
-        # np.random.seed(44)
-        # random.seed(44)
-        # tf.set_random_seed(44)
-        # model.load_weights(path.join(models_folder, '{}_weights3.h5'.format(model_id)))
+        # for l in model.layers:
+        #     l.trainable = True
         # model.compile(loss=dice_logloss3,
-        #             optimizer=Adam(lr=2e-5),
+        #             optimizer=Adam(lr=1e-3),
         #             metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
-        # model_checkpoint4 = ModelCheckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
-        #                                  save_best_only=True, save_weights_only=False, mode='max')
+        #
+        # model_2=model.fit_generator(generator=batch_data_generat,
+        #                     epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
+        #                     validation_data=val_data_generat,
+        #                      validation_steps=validation_steps,
+        #                     callbacks=[model_checkpoint], use_multiprocessing=True)
+        # model_2_stats=model_2.history['loss']
+        # model_num=2
+        # numpy_loss_history = np.array(model_2_stats)
+        #
+        # model.optimizer = Adam(lr=2e-4)
         # model.fit_generator(generator=batch_data_generat,
         #                     epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
         #                     validation_data=val_data_generat,
         #                     validation_steps=validation_steps,
-        #                     callbacks=[model_checkpoint4])
-        # model_4_stats = model.history()
-        # json_log = open('loss_log.json', mode='wt', buffering=1)
-        # json_logging_callback = LambdaCallback(
-        #     on_epoch_end=lambda epoch, logs: json_log.write(
-        #         json.dumps({'epoch': epoch, 'loss': logs['loss']}) + '\n'),
-        #     on_train_end=lambda logs: json_log.close()
-        # )
+        #                     callbacks=[model_checkpoint], use_multiprocessing=True)
+        #
+        # np.random.seed(22)
+        # random.seed(22)
+        # tf.set_random_seed(22)
+        # model.load_weights(path.join(models_folder, '{}_weights2.h5'.format(model_id)))
+        # model.compile(loss=dice_logloss,
+        #             optimizer=Adam(lr=5e-4),
+        #             metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
+        # model_checkpoint2 =  ModelCheckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
+        #                                  save_best_only=True, save_weights_only=False, mode='max')
+        # # model.fit_generator(generator=batch_data_generat,
+        # #                     epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
+        # #                     validation_data=val_data_generat,
+        # #                     validation_steps=validation_steps,
+        # #                     callbacks=[model_checkpoint2])
+        # # optimizer=Adam(lr=1e-5)
+        # # model.fit_generator(generator=batch_data_generat,
+        # #                     epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
+        # #                     validation_data=val_data_generat,
+        # #                     validation_steps=validation_steps,
+        # #                     callbacks=[model_checkpoint2])
+        # # model_2_stats = model.history()
+        # # np.random.seed(33)
+        # # random.seed(33)
+        # # tf.set_random_seed(33)
+        # # model.load_weights(path.join(models_folder, '{}_weights2.h5'.format(model_id)))
+        # # model.compile(loss=dice_logloss2,
+        # #             optimizer=Adam(lr=5e-5),
+        # #             metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
+        # # model_checkpoint3 = ModelCheckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
+        # #                                  save_best_only=True, save_weights_only=False, mode='max')
+        # # model.fit_generator(generator=batch_data_generat,
+        # #                     epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
+        # #                     validation_data=val_data_generat,
+        # #                     validation_steps=validation_steps,
+        # #                     callbacks=[model_checkpoint3])
+        # # model_3_stats = model.history()
+        # # np.random.seed(44)
+        # # random.seed(44)
+        # # tf.set_random_seed(44)
+        # # model.load_weights(path.join(models_folder, '{}_weights3.h5'.format(model_id)))
+        # # model.compile(loss=dice_logloss3,
+        # #             optimizer=Adam(lr=2e-5),
+        # #             metrics=[dice_coef, dice_coef_rounded, metrics.binary_crossentropy])
+        # # model_checkpoint4 = ModelCheckpoint(path.join(models_folder, '{}_weights.h5'.format(model_id)), monitor='val_dice_coef_rounded',
+        # #                                  save_best_only=True, save_weights_only=False, mode='max')
+        # # model.fit_generator(generator=batch_data_generat,
+        # #                     epochs=number_of_epochs, steps_per_epoch=steps_per_epoch, verbose=2,
+        # #                     validation_data=val_data_generat,
+        # #                     validation_steps=validation_steps,
+        # #                     callbacks=[model_checkpoint4])
+        # # model_4_stats = model.history()
+        # # json_log = open('loss_log.json', mode='wt', buffering=1)
+        # # json_logging_callback = LambdaCallback(
+        # #     on_epoch_end=lambda epoch, logs: json_log.write(
+        # #         json.dumps({'epoch': epoch, 'loss': logs['loss']}) + '\n'),
+        # #     on_train_end=lambda logs: json_log.close()
+        # # )
 
         K.clear_session()
