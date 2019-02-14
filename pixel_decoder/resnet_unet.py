@@ -26,6 +26,7 @@ def conv_block(prev, num_filters, kernel=(3, 3), strides=(1, 1), act='relu', pre
 def get_resnet_unet(input_shape,channel_no, classes = 1, weights='imagenet'):
     bn_axis = 3
     inp = Input(input_shape + (channel_no,))
+    print(inp)
 
     x = Conv2D(
         64, (7, 7), strides=(2, 2), padding='same', name='conv1')(inp)

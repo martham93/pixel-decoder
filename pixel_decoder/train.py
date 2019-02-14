@@ -35,6 +35,7 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
     means, stds = cache_stats(imgs_folder)
     if model_id == 'resnet_unet':
         #model = get_resnet_unet(input_shape, channel_no)
+        print(input_shape)
         model = get_resnet_unet(input_shape, channel_no, classes)
     else:
         print('No model loaded!')
@@ -75,11 +76,11 @@ def train(batch_size, imgs_folder, masks_folder, model_id, origin_shape_no,
         # val_data_generat = val_data_generator(val_idx, batch_size, validation_steps, means, stds, imgs_folder, masks_folder, models_folder, channel_no, border_no, origin_shape_no)
 
         batch_data_generat = veda_data.train.batch_generator(batch_size=batch_size, channels_last=True)
-        for x,y in batch_data_generat:
-            print('train', x.shape, y.shape)
+        # for x,y in batch_data_generat:
+        #     print('train', x.shape, y.shape)
         val_data_generat = veda_data.test.batch_generator(batch_size=batch_size, channels_last=True)
-        for x,y in val_data_generat:
-            print('validation', x.shape, y.shape)
+        # for x,y in val_data_generat:
+        #     print('validation', x.shape, y.shape)
 
         print("about to compile")
         model.compile(loss=dice_logloss3,
